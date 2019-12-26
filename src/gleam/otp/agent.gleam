@@ -1,7 +1,7 @@
 import gleam/atom.{Atom}
-import gleam/otp/process.{Pid}
+import gleam/otp/process.{Pid, UnknownMessage}
 
-// TODO: implement sys http://erlang.org/doc/man/sys.html
+pub external type Ref
 
 pub type Next(state) {
   Next(state)
@@ -21,7 +21,8 @@ pub type Reply(reply, state) {
 }
 
 pub type Msg(state) {
-  Msg(fn(state) -> Next(state))
+  Sync(Pid(UnknownMessage), Ref, fn(state) -> Next(state))
+  Async(fn(state) -> Next(state))
 }
 
 pub external fn start_link(
