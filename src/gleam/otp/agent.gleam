@@ -28,19 +28,18 @@ pub type Msg(state) {
 pub external fn start_link(
   fn() -> Start(state),
 ) -> Result(Pid(Msg(state)), String)
-  = "gleam_otp_agent_native" "start_link"
+  = "gleam_otp_agent_native" "start_link";
 
-// TODO: implement
-pub external fn async(
-  on: Pid(Msg(state)),
-  exec: fn(state) -> Next(state),
-) -> Nil
-  = "gleam_otp_agent_native" "async"
+// TODO: test
+pub fn async(on agent: Pid(Msg(state)), exec handler: fn(state) -> Next(state)) -> Nil {
+  process.send(agent, Async(handler))
+  Nil
+}
 
-// TODO: implement
+// TODO: test
 pub external fn sync(
   on: Pid(Msg(state)),
   timeout: Int,
   exec: fn(state) -> Reply(reply, state),
 ) -> reply
-  = "gleam_otp_agent_native" "sync"
+  = "gleam_otp_agent_native" "sync";

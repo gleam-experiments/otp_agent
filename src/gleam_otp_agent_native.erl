@@ -1,7 +1,7 @@
 -module(gleam_otp_agent_native).
 
 % Public API functions
--export([start_link/1, async/2, sync/3]).
+-export([start_link/1, sync/3]).
 
 % Private system exports
 -export([init/2, loop/3, system_continue/3, system_terminate/4, write_debug/3,
@@ -11,10 +11,6 @@
 
 start_link(Fn) ->
   proc_lib:start_link(?MODULE, init, [Fn, self()]).
-
-async(Agent, Fn) ->
-    Agent ! {async, Fn},
-    nil.
 
 sync(Agent, Timeout, Fn) ->
     Ref = make_ref(),
