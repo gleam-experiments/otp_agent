@@ -1,8 +1,9 @@
+import gleam/bool
+import gleam/expect
 import gleam/otp/agent
 import gleam/otp/process
-import gleam/expect
+import gleam/otp/stop.{Reason, Normal}
 import gleam/result
-import gleam/bool
 
 external fn sleep(Int) -> Nil = "timer" "sleep"
 
@@ -25,15 +26,14 @@ pub fn start_link_failed_test() {
 pub fn stop_test() {
   let Ok(pid) = agent.start_link(fn() { agent.Ready(Nil) })
   expect.true(process.is_alive(pid))
-  process.unlink(pid) // TODO
-  agent.stop(agent: pid, within: 100, because: "ok")
+  agent.stop(agent: pid, within: 100, because: Normal)
   expect.false(process.is_alive(pid))
 }
 
 pub fn async_next_stop_test() {
   let Ok(pid) = agent.start_link(fn() { agent.Ready(Nil) })
   expect.true(process.is_alive(pid))
-  agent.async(pid, fn(_) { agent.Stop("nope") })
+  agent.async(pid, fn(_) { agent.Stop(Normal) })
   sleep(10)
   expect.true(bool.negate(process.is_alive(pid)))
 }

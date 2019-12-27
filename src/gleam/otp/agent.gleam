@@ -1,4 +1,5 @@
 import gleam/atom.{Atom}
+import gleam/otp/stop.{Reason}
 import gleam/otp/process.{Pid, UnknownMessage}
 
 pub external type Ref;
@@ -11,7 +12,7 @@ pub type Next(state) {
   Next(state)
   Continue(fn() -> Next(state))
   Hibernate(state)
-  Stop(reason: String)
+  Stop(reason: Reason)
 };
 
 pub type Start(state) {
@@ -52,14 +53,14 @@ pub fn sync(on agent: Pid(Msg(state)), exec fun: fn(state) -> Reply(reply, state
 
 external fn proc_lib_stop(
   agent: Pid(Msg(state)),
-  because: String,
+  because: Reason,
   within: Int,
 ) -> NoLeak
   = "proc_lib" "stop"
 
 pub fn stop(
   agent pid: Pid(Msg(state)),
-  because reason: String,
+  because reason: Reason,
   within timeout: Int,
 ) -> Nil {
   proc_lib_stop(agent: pid, because: reason, within: timeout)
