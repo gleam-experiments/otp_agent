@@ -3,6 +3,8 @@ import gleam/otp/process.{Pid, UnknownMessage}
 
 pub external type Ref;
 
+external type NoLeak;
+
 // TODO: Refine stop reason type so we can tell if it is an error or not
 
 pub type Next(state) {
@@ -39,11 +41,27 @@ pub fn async(on agent: Pid(Msg(state)), exec handler: fn(state) -> Next(state)) 
 
 pub external fn sync_timeout(
   on: Pid(Msg(state)),
-  timeout: Int,
+  within: Int,
   exec: fn(state) -> Reply(reply, state),
 ) -> reply
   = "gleam_otp_agent_native" "sync";
 
 pub fn sync(on agent: Pid(Msg(state)), exec fun: fn(state) -> Reply(reply, state)) -> reply {
   sync_timeout(on: agent, exec: fun, timeout: 5000)
+}
+
+external fn proc_lib_stop(
+  agent: Pid(Msg(state)),
+  because: String,
+  within: Int,
+) -> NoLeak
+  = "proc_lib" "stop"
+
+pub fn stop(
+  agent pid: Pid(Msg(state)),
+  because reason: String,
+  within timeout: Int,
+) -> Nil {
+  proc_lib_stop(agent: pid, because: reason, within: timeout)
+  Nil
 }
