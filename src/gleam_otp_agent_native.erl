@@ -30,7 +30,7 @@ init(StartFn, Parent) ->
             proc_lib:init_ack(Parent, {ok, self()}),
             loop(State, Parent, Debug);
 
-        {continue_init, Continuation} ->
+        {init, Continuation} ->
             proc_lib:init_ack(Parent, {ok, self()}),
             handle_next(Continuation(), Parent, Debug);
 
@@ -58,10 +58,10 @@ loop(State, Parent, Debug) ->
 
 handle_next(Next, Parent, Debug) ->
     case Next of
-        {next, State} -> loop(State, Parent, Debug);
+        {continue, State} -> loop(State, Parent, Debug);
         {hibernate, State} -> proc_lib:hibernate(?MODULE, loop, [State]);
         {stop, Reason} -> terminate(Reason);
-        {continue, Continuation} -> handle_next(Continuation(), Parent, Debug)
+        {exec, Continuation} -> handle_next(Continuation(), Parent, Debug)
     end.
 
 % TODO: log error

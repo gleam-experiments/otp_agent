@@ -1,34 +1,20 @@
-# otp_agent
+import gleam/otp/process.{Pid}
+import gleam/otp/agent.{Msg, Continue, Reply}
 
-This library provides a way for Gleam programmers to create stateful and OTP
-compatible server process that can respond to both synchronous and
-asynchronous messages. It intends to be a common building block for Gleam OTP
-applications, similar to `gen_server` for Erlang and `GenServer` for Elixir.
+// Stack agent implementation
 
-Being OTP compatible agent processes support OTP tracing, error reporting, and
-will fit into a supervision tree.
-
-
-## Example
-
-Imagine we wanted to implement an agent that works like a stack, allowing us
-to push and pop elements.
-
-```rust
-import gleam/otp/agent.{Continue, Reply}
-
-pub fn start_link(initial stack) {
+pub fn start_link(initial stack) -> Result(Pid(Msg(List(x))), String) {
   agent.start_link(fn() { agent.Ready(stack) })
 }
 
-pub fn push(onto pid, push item) {
+pub fn push(onto pid: Pid(Msg(List(x))), item new: x) -> Nil {
   let push_fn = fn(stack) {
-    Continue([item | stack])
+    Continue([new | stack])
   }
   agent.async(pid, push_fn)
 }
 
-pub fn pop(from pid) {
+pub fn pop(from pid: Pid(Msg(List(x)))) -> Result(x, Nil) {
   let pop_fn = fn(stack) {
     case stack {
       [] ->
@@ -40,11 +26,9 @@ pub fn pop(from pid) {
   }
   agent.sync(pid, pop_fn)
 }
-```
 
-It can then be used like so:
+// Tests
 
-```rust
 import gleam/expect
 
 pub fn stack_agent_test() {
@@ -69,4 +53,3 @@ pub fn stack_agent_test() {
     Ok("World!"),
   )
 }
-```

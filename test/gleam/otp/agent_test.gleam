@@ -12,8 +12,8 @@ pub fn start_link_ready_test() {
   expect.true(process.is_alive(pid))
 }
 
-pub fn start_link_continue_init_test() {
-  let Ok(pid) = agent.start_link(fn() { agent.ContinueInit(fn() { agent.Next(Nil) }) })
+pub fn start_link_init_test() {
+  let Ok(pid) = agent.start_link(fn() { agent.Init(fn() { agent.Continue(Nil) }) })
   expect.true(process.is_alive(pid))
 }
 
@@ -38,10 +38,10 @@ pub fn async_next_stop_test() {
   expect.true(bool.negate(process.is_alive(pid)))
 }
 
-pub fn async_next_continue_test() {
+pub fn async_next_exec_test() {
   let Ok(pid) = agent.start_link(fn() { agent.Ready(Nil) })
   expect.true(process.is_alive(pid))
-  agent.async(pid, fn(_) { agent.Continue(fn() { agent.Next(Nil) }) })
+  agent.async(pid, fn(_) { agent.Exec(fn() { agent.Continue(Nil) }) })
   sleep(10)
   expect.true(process.is_alive(pid))
 }
@@ -54,17 +54,17 @@ pub fn async_next_hibernate_test() {
   expect.true(process.is_alive(pid))
 }
 
-pub fn async_next_next_test() {
+pub fn async_next_continue_test() {
   let Ok(pid) = agent.start_link(fn() { agent.Ready(Nil) })
   expect.true(process.is_alive(pid))
-  agent.async(pid, fn(_) { agent.Next(Nil) })
+  agent.async(pid, fn(_) { agent.Continue(Nil) })
   sleep(10)
   expect.true(process.is_alive(pid))
 }
 
 pub fn sync_test() {
   let Ok(pid) = agent.start_link(fn() { agent.Ready(0) })
-  let inc = fn(s) { agent.Reply(s, agent.Next(s + 1)) }
+  let inc = fn(s) { agent.Reply(s, agent.Continue(s + 1)) }
   let call = fn() { agent.sync(on: pid, exec: inc) }
 
   expect.equal(call(), 0)

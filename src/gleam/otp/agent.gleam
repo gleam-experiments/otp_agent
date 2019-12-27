@@ -9,20 +9,20 @@ external type NoLeak;
 // TODO: Refine stop reason type so we can tell if it is an error or not
 
 pub type Next(state) {
-  Next(state)
-  Continue(fn() -> Next(state))
+  Continue(state)
   Hibernate(state)
+  Exec(fn() -> Next(state))
   Stop(reason: Reason)
 };
 
 pub type Start(state) {
   Ready(state: state)
-  ContinueInit(fn() -> Next(state))
+  Init(fn() -> Next(state))
   Failed(reason: String)
 };
 
 pub type Reply(reply, state) {
-  Reply(reply, Next(state))
+  Reply(with: reply, then: Next(state))
 };
 
 pub type Msg(state) {
