@@ -32,16 +32,18 @@ pub external fn start_link(
 ) -> Result(Pid(Msg(state)), String)
   = "gleam_otp_agent_native" "start_link";
 
-// TODO: test
 pub fn async(on agent: Pid(Msg(state)), exec handler: fn(state) -> Next(state)) -> Nil {
   process.send(agent, Async(handler))
   Nil
 }
 
-// TODO: test
-pub external fn sync(
+pub external fn sync_timeout(
   on: Pid(Msg(state)),
   timeout: Int,
   exec: fn(state) -> Reply(reply, state),
 ) -> reply
   = "gleam_otp_agent_native" "sync";
+
+pub fn sync(on agent: Pid(Msg(state)), exec fun: fn(state) -> Reply(reply, state)) -> reply {
+  sync_timeout(on: agent, exec: fun, timeout: 5000)
+}

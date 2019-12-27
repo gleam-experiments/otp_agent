@@ -36,7 +36,7 @@ init(StartFn, Parent) ->
 
         {failed, Reason} ->
             proc_lib:init_ack(Parent, {error, Reason}),
-            proc_lib:stop(self(), Reason, infinity)
+            terminate(Reason)
     end.
 
 loop(State, Parent, Debug) ->

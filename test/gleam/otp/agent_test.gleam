@@ -53,3 +53,14 @@ pub fn async_next_next_test() {
   sleep(10)
   expect.true(process.is_alive(pid))
 }
+
+pub fn sync_test() {
+  let inc = fn(s) { agent.Reply(s, agent.Next(s + 1)) }
+  let Ok(pid) = agent.start_link(fn() { agent.Ready(0) })
+
+  expect.equal(agent.sync(pid, inc), 0)
+  expect.equal(agent.sync(pid, inc), 1)
+  expect.equal(agent.sync(pid, inc), 2)
+  expect.equal(agent.sync(pid, inc), 3)
+  expect.equal(agent.sync(pid, inc), 4)
+}
