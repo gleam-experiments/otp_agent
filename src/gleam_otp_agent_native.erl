@@ -60,9 +60,14 @@ handle_next(Next, Parent, Debug) ->
     case Next of
         {next, State} -> loop(State, Parent, Debug);
         {hibernate, State} -> proc_lib:hibernate(?MODULE, loop, [State]);
-        {stop, Reason} -> proc_lib:stop(self(), Reason, infinity);
+        {stop, Reason} -> terminate(Reason);
         {continue, Continuation} -> handle_next(Continuation(), Parent, Debug)
     end.
+
+% TODO: log error
+% https://github.com/erlang/otp/blob/master/lib/stdlib/src/gen_server.erl#L890-L903
+terminate(_Reason) ->
+  ok.
 
 %% sys module callbacks
 

@@ -3,6 +3,8 @@ import gleam/otp/process.{Pid, UnknownMessage}
 
 pub external type Ref;
 
+// TODO: Refine stop reason type so we can tell if it is an error or not
+
 pub type Next(state) {
   Next(state)
   Continue(fn() -> Next(state))
