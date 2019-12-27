@@ -1,29 +1,29 @@
 import gleam/atom.{Atom}
 import gleam/otp/process.{Pid, UnknownMessage}
 
-pub external type Ref
+pub external type Ref;
 
 pub type Next(state) {
   Next(state)
   Continue(fn() -> Next(state))
   Hibernate(state)
   Stop(reason: String)
-}
+};
 
 pub type Start(state) {
   Ready(state: state)
   ContinueInit(fn() -> Next(state))
   Failed(reason: String)
-}
+};
 
 pub type Reply(reply, state) {
   Reply(reply, Next(state))
-}
+};
 
 pub type Msg(state) {
   Sync(Pid(UnknownMessage), Ref, fn(state) -> Next(state))
   Async(fn(state) -> Next(state))
-}
+};
 
 pub external fn start_link(
   fn() -> Start(state),
